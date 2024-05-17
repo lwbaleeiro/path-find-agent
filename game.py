@@ -2,6 +2,7 @@ import pygame
 import numpy as np
 import os
 import random
+import sys
 
 from agent import Agent
 from object import Obstacle, Goal
@@ -55,7 +56,8 @@ def main():
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
+                pygame.quit()
+                sys.exit()
         
         # Obtém os inputs da rede neural
         inputs = get_inputs(agent)
@@ -67,9 +69,12 @@ def main():
         # Verifica colisões
         reward, run = agent.check_collision(obstacles, goal)
 
+        # Verifica se tem passos sobrando
+        run = agent.steps > 0
+
         # Salva os pesos da rede neural após cada episódio
-        # if not run:
-        #     agent.q_network.save_weights()
+        if not run and reward == 100:
+            agent.q_network.save_weights()
         
         agent.train(inputs, reward)
 
@@ -80,6 +85,10 @@ def main():
         goal.draw(window)
         
         pygame.display.update()
+
+        if not run:
+            pygame.quit()
+            sys.exit()
     
     pygame.quit()
 

@@ -23,9 +23,12 @@ class Agent:
         self.y = 300
         self.color = (0, 255, 0)
         self.speed = 5
-    
-    def move(self, action):
 
+        self.steps = 1000
+
+    def move(self, action):
+        
+        self.steps -= 1
         # Verifica se a saída da rede neural é uma matriz bidimensional
         # Move o agente com base na ação selecionada
         if len(action.shape) == 1:
@@ -35,19 +38,11 @@ class Agent:
             dx = (action[0][0] - 0.5) * 2 * self.speed
             dy = (action[0][1] - 0.5) * 2 * self.speed
 
-        self.x += dx
-        self.y += dy
-
-        # Impede o agente de sair da tela
-        if self.x < 0:
-            self.x = 0
-        elif self.x + self.size > 800:
-            self.x = 800 - self.size
-        
-        if self.y < 0:
-            self.y = 0
-        elif self.y + self.size > 600:
-            self.y = 600 - self.size
+        # Verifica se o agente vai colidir com as bordas da tela
+        if 0 <= self.x + dx <= 800 - self.size:
+            self.x += dx
+        if 0 <= self.y + dy <= 600 - self.size:
+            self.y += dy
     
     def draw(self, window):
         pygame.draw.rect(window, self.color, (self.x, self.y, self.size, self.size))
@@ -77,17 +72,3 @@ class Agent:
     
     def train(self, next_inputs, reward):  
         return self.q_network.backward(next_inputs, reward)
-
-
-    # def train(self, state, action, reward, next_state, done):
-    #     target = reward
-    #     if not done:
-    #         target = reward + self.gamma * np.amax(self.q_network.forward(next_state)[0])
-        
-    #     target_f = self.q_network.forward(state)
-    #     target_f[0][action] = target
-        
-    #     self.q_network.backward(state, target_f, self.learning_rate)
-        
-    #     if self.epsilon > self.epsilon_min:
-    #         self.epsilon *= self.epsilon_decay

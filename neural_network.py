@@ -90,7 +90,7 @@ if __name__ == "__main__":
     print("Output antes do treinamento:", output)
     
     for _ in range(10000):  # Treina a rede
-        nn.backward(inputs, expected_output, learning_rate=0.01)
+        nn.backward(inputs, expected_output)
         nn.forward(inputs)
     
     output = nn.forward(inputs)
