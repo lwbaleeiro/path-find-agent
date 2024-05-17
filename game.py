@@ -71,7 +71,7 @@ def main():
         if not run:
             agent.q_network.save_weights()
         
-        agent.train(inputs, reward, action)
+        agent.train(inputs, reward)
 
         window.fill(WHITE)
         agent.draw(window)

@@ -71,14 +71,13 @@ class Agent:
         
     # Seleciona uma ação com base na política ε-greedy
     def act(self, inputs):
-        if np.random.rand() <= self.q_network.epsilon:
-            return random.randrange(self.output_size) 
-        act_values = self.q_network.forward(inputs) * 2 - 1
-        return np.argmax(act_values[0])
+        if random.uniform(0, 1) <= self.q_network.epsilon:
+            return np.random.rand(2)
+        return self.q_network.forward(inputs) * 2 - 1
     
-    def train(self, inputs, reward, output):
+    def train(self, inputs, reward):
         
-        self.q_network.backward(inputs, reward, output)
+        self.q_network.backward(inputs, reward)
         if self.q_network.epsilon > self.q_network.epsilon_min:
             self.q_network.epsilon *= self.q_network.epsilon_decay
 

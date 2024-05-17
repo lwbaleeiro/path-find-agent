@@ -73,15 +73,15 @@ class NeuralNetwork:
         self.output = self.sigmoid(np.dot(self.hidden, self.weights_hidden_output) + self.bias_output)
         return self.output
 
-    def backward(self, inputs, reward, output):
+    def backward(self, inputs, reward):
 
-        expected_output = reward + self.gamma * np.max(output)
+        expected_output = reward + self.gamma * np.max(self.output_size)
 
-        output_error = expected_output - self.output
-        output_delta = output_error * self.sigmoid_derivative(self.output)
+        output_error = expected_output - self.output_size
+        output_delta = output_error * self.sigmoid_derivative(self.output_size)
 
         hidden_error = output_delta.dot(self.weights_hidden_output.T)
-        hidden_delta = hidden_error * self.sigmoid_derivative(self.hidden)
+        hidden_delta = hidden_error * self.sigmoid_derivative(self.hidden_size)
 
         # Atualiza os pesos e bias
         self.weights_hidden_output += self.hidden.T.dot(output_delta) * self.learning_rate
