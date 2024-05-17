@@ -68,8 +68,8 @@ def main():
         reward, run = agent.check_collision(obstacles, goal)
 
         # Salva os pesos da rede neural após cada episódio
-        if not run:
-            agent.q_network.save_weights()
+        # if not run:
+        #     agent.q_network.save_weights()
         
         agent.train(inputs, reward)
 

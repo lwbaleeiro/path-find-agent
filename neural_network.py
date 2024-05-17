@@ -1,43 +1,3 @@
-
-# # Classe para a rede neural
-# class NeuralNetwork:
-#     def __init__(self, input_size, hidden_size, output_size):
-#         self.input_size = input_size
-#         self.hidden_size = hidden_size
-#         self.output_size = output_size
-
-#         # Inicializa os pesos
-#         self.weights_input_hidden = np.random.randn(self.input_size, self.hidden_size)
-#         self.weights_hidden_output = np.random.randn(self.hidden_size, self.output_size)
-
-#         # Inicializa os bias
-#         self.bias_hidden = np.zeros((1, self.hidden_size))
-#         self.bias_output = np.zeros((1, self.output_size))
-
-#     def sigmoid(self, x):
-#         return 1 / (1 + np.exp(-x))
-
-#     def sigmoid_derivative(self, x):
-#         return x * (1 - x)
-
-#     def forward(self, inputs):
-#         self.hidden = self.sigmoid(np.dot(inputs, self.weights_input_hidden) + self.bias_hidden)
-#         self.output = self.sigmoid(np.dot(self.hidden, self.weights_hidden_output) + self.bias_output)
-#         return self.output
-
-#     def backward(self, inputs, target, learning_rate):
-#         output_error = target - self.output
-#         output_delta = output_error * self.sigmoid_derivative(self.output)
-
-#         hidden_error = output_delta.dot(self.weights_hidden_output.T)
-#         hidden_delta = hidden_error * self.sigmoid_derivative(self.hidden)
-
-#         # Atualiza os pesos e bias
-#         self.weights_hidden_output += self.hidden.T.dot(output_delta) * learning_rate
-#         self.weights_input_hidden += inputs.reshape(-1, 1).dot(hidden_delta) * learning_rate
-#         self.bias_hidden += np.sum(hidden_delta, axis=0, keepdims=True) * learning_rate
-#         self.bias_output += np.sum(output_delta, axis=0, keepdims=True) * learning_rate
-
 import numpy as np
 import pickle
 
@@ -46,6 +6,9 @@ class NeuralNetwork:
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.output_size = output_size
+
+        self.hidden = []
+        self.output = []
 
         self.learning_rate = 0.01
 
@@ -73,24 +36,22 @@ class NeuralNetwork:
         self.output = self.sigmoid(np.dot(self.hidden, self.weights_hidden_output) + self.bias_output)
         return self.output
 
-    def backward(self, inputs, reward):
+    def backward(self, next_inputs, reward):
+        target = reward + self.gamma * np.max(self.forward(next_inputs))
 
-        expected_output = reward + self.gamma * np.max(self.output_size)
-
-        output_error = expected_output - self.output_size
-        output_delta = output_error * self.sigmoid_derivative(self.output_size)
+        output_error = target - self.output
+        output_delta = output_error * self.sigmoid_derivative(self.output)
 
         hidden_error = output_delta.dot(self.weights_hidden_output.T)
-        hidden_delta = hidden_error * self.sigmoid_derivative(self.hidden_size)
+        hidden_delta = hidden_error * self.sigmoid_derivative(self.hidden)
 
         # Atualiza os pesos e bias
         self.weights_hidden_output += self.hidden.T.dot(output_delta) * self.learning_rate
-        self.weights_input_hidden += inputs.T.dot(hidden_delta) * self.learning_rate
+        self.weights_input_hidden += next_inputs.reshape(-1, 1).dot(hidden_delta) * self.learning_rate
         self.bias_hidden += np.sum(hidden_delta, axis=0, keepdims=True) * self.learning_rate
         self.bias_output += np.sum(output_delta, axis=0, keepdims=True) * self.learning_rate
 
-    def get_epsilon(self):
-        return max(self.min_epsilon, self.epsilon * self.epsilon_decay)
+        self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)
 
     # Função para salvar e carregar a rede neural
     def save_model(self):

@@ -75,11 +75,9 @@ class Agent:
             return np.random.rand(2)
         return self.q_network.forward(inputs) * 2 - 1
     
-    def train(self, inputs, reward):
-        
-        self.q_network.backward(inputs, reward)
-        if self.q_network.epsilon > self.q_network.epsilon_min:
-            self.q_network.epsilon *= self.q_network.epsilon_decay
+    def train(self, next_inputs, reward):  
+        return self.q_network.backward(next_inputs, reward)
+
 
     # def train(self, state, action, reward, next_state, done):
     #     target = reward
