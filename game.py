@@ -3,7 +3,7 @@ import numpy as np
 import os
 import sys
 
-from agent import Agent
+from agent import PopulationAgent
 from object import ObstaclesPhaseOne, Goal
 
 pygame.init()
@@ -23,29 +23,12 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 
-def display_info(generation, steps):
+def display_info(generation, agents):
     text = font.render(f"Generation: {generation}", True, BLACK)
-    window.blit(text, (400, 10))
+    window.blit(text, (300, 10))
 
-    text = font.render(f"Steps left: {steps}", True, BLACK)
-    window.blit(text, (600, 10))
-
-# Função para obter os inputs da rede neural
-def get_inputs(agent):
-    inputs = np.zeros(8)  # 8 inputs: distâncias nas direções N, NE, E, SE, S, SW, W, NW
-    inputs[0] = agent.y  # Norte
-    inputs[1] = min(WINDOW_WIDTH - agent.x, WINDOW_HEIGHT - agent.y)  # Nordeste
-    inputs[2] = WINDOW_WIDTH - agent.x  # Leste
-    inputs[3] = min(WINDOW_WIDTH - agent.x, agent.y)  # Sudeste
-    inputs[4] = WINDOW_HEIGHT - agent.y  # Sul
-    inputs[5] = min(agent.x, WINDOW_HEIGHT - agent.y)  # Sudoeste
-    inputs[6] = agent.x  # Oeste
-    inputs[7] = min(agent.x, agent.y)  # Noroeste
-
-    # Normaliza os inputs
-    inputs /= max(WINDOW_WIDTH, WINDOW_HEIGHT)
-
-    return inputs
+    text = font.render(f"Agents alive: {len(agents.population_agent_list)}", True, BLACK)
+    window.blit(text, (500, 10))
 
 # Função principal do jogo
 def main():
@@ -56,12 +39,12 @@ def main():
     goal = Goal()
 
     for gen in range(generations):
-        agent = Agent()
+
+        agents = PopulationAgent(1)
         run = True
 
         # Carrega os pesos da rede neural se o arquivo existir
-        if os.path.exists(f"weights_{obstacles.descripton}.pkl"):
-            agent.q_network.load_weights()
+        agents.load_weights()
 
         while run:
             clock.tick(30)
@@ -71,43 +54,32 @@ def main():
                     pygame.quit()
                     sys.exit()
             
-            # Obtém os inputs da rede neural
-            inputs = get_inputs(agent)
-            action = agent.act(inputs)
+            # Pega a proxima ação do agente
+            agents.act()
 
             # Move o agente com base na ação selecionada
-            agent.move(action)
+            agents.move()
             
             # Verifica colisões
-            reward, run = agent.check_collision(obstacles.obstacles_list, goal)
-
-            if not run:
-                print("Atingiu obstaculo")
-                
-            # Verifica se tem passos sobrando
-            if run == True and agent.steps == 0:
-                print("Acabou os passos")
-                run = False
-
-            # Salva os pesos da rede neural caso tenha chegado ao objetivo
-            if not run and reward == 100:
-                print("Atingiu o objetivo")
-                agent.q_network.save_weights(obstacles.descripton)
-                break
+            agents.check_collision(obstacles.obstacles_list, goal)
             
             # Atualiza os pesos e bias de acordo com os inputs
-            agent.train(inputs, reward)
+            agents.train()
+
+            # Verifica se deve continuar
+            if agents.check_all_dead_or_rechad_goal() == True:
+                run = False
+                agents.save_best_agent()
 
             # Desenha objetos
             window.blit(background_image, (0, 0))
-            agent.draw(window)
+            agents.draw(window)
             obstacles.draw()
             goal.draw(window)
-            display_info(gen, agent.steps)
-            
-            pygame.display.update()
+            display_info(gen, agents)
 
-    agent.q_network.save_weights()         
+            pygame.display.update()   
+
     if not run:
         pygame.quit()
         sys.exit()

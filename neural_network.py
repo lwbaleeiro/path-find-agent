@@ -55,15 +55,15 @@ class NeuralNetwork:
 
     # Função para salvar os pesos da rede neural em um arquivo
     def save_weights(self, description):
-        with open(f"weights_{description}.pkl", 'wb') as f:
-            pickle.dump(self.weights_input_hidden, f)
-            pickle.dump(self.weights_hidden_output, f)
+        with open(f"weights_{description}.pkl", 'wb') as file:
+            pickle.dump(self.weights_input_hidden, file)
+            pickle.dump(self.weights_hidden_output, file)
 
     # Função para carregar os pesos da rede neural de um arquivo
-    def load_weights(self):
-        with open("weights.pkl", 'rb') as f:
-            self.weights_input_hidden = pickle.load(f)
-            self.weights_hidden_output = pickle.load(f)
+    def load_weights(self, description):
+        with open(f"weights_{description}.pkl", 'rb') as file:
+            self.weights_input_hidden = pickle.load(file)
+            self.weights_hidden_output = pickle.load(file)
 
 # Exemplo de uso:
 if __name__ == "__main__":

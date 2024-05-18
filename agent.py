@@ -17,58 +17,147 @@ class Agent:
         self.y = 300
         self.color = (0, 255, 0)
         self.speed = 5
+        self.alive = True
+
+        self.collided = False
+        self.reached_goal = False
+        self.reward = 0
+        self.next_action = np.random.rand(2)
+        self.inputs = np.zeros(8)  # 8 inputs: distâncias nas direções N, NE, E, SE, S, SW, W, NW
 
         self.steps = 1000
 
-    def move(self, action):
-        
-        # prev_x = self.x
-        # prev_y = self.y
+    def move(self):
+        if self.alive == True:
+            action = self.next_action 
+            # Verifica se a saída da rede neural é uma matriz bidimensional
+            # Move o agente com base na ação selecionada
+            if len(action.shape) == 1:
+                dx = (action[0] - 0.5) * 2 * self.speed
+                dy = (action[1] - 0.5) * 2 * self.speed
+            else:
+                dx = (action[0][0] - 0.5) * 2 * self.speed
+                dy = (action[0][1] - 0.5) * 2 * self.speed
 
-        # Verifica se a saída da rede neural é uma matriz bidimensional
-        # Move o agente com base na ação selecionada
-        if len(action.shape) == 1:
-            dx = (action[0] - 0.5) * 2 * self.speed
-            dy = (action[1] - 0.5) * 2 * self.speed
-        else:
-            dx = (action[0][0] - 0.5) * 2 * self.speed
-            dy = (action[0][1] - 0.5) * 2 * self.speed
+            # Verifica se o agente vai colidir com as bordas da tela
+            if 0 <= self.x + dx <= self.surface.get_width() - self.size:
+                self.x += dx
+            if 0 <= self.y + dy <= self.surface.get_height() - self.size:
+                self.y += dy
 
-        # Verifica se o agente vai colidir com as bordas da tela
-        if 0 <= self.x + dx <= self.surface.get_width() - self.size:
-            self.x += dx
-        if 0 <= self.y + dy <= self.surface.get_height() - self.size:
-            self.y += dy
-
-        # # Verifica se ele saiu do lugar
-        # if (self.x != prev_x) or (self.y != prev_y):
-        self.steps -= 1
+            self.steps -= 1
     
     def draw(self, window):
         pygame.draw.rect(window, self.color, (self.x, self.y, self.size, self.size))
     
     # Função para verificar colisões
     def check_collision(self, obstacles, goal):
+
         for obstacle in obstacles:
             if (self.x < obstacle.x + obstacle.width and
                 self.x + self.size > obstacle.x and
                 self.y < obstacle.y + obstacle.height and
                 self.y + self.size > obstacle.y):
-                return -200, False
+                self.collided = True
+                self.reward = -200
         
         if (self.x < goal.x + goal.size and
             self.x + self.size > goal.x and
             self.y < goal.y + goal.size and
             self.y + self.size > goal.y):
-            return 100, False
-        
-        return 0, True
+            self.reached_goal = True
+            self.reward = 100
         
     # Seleciona uma ação com base na política ε-greedy
-    def act(self, inputs):
+    def act(self):
+        self.__get_inputs()
+
         if random.uniform(0, 1) <= self.q_network.epsilon:
             return np.random.rand(2)
-        return self.q_network.forward(inputs) * 2 - 1
+        self.next_action = self.q_network.forward(self.inputs) * 2 - 1
     
-    def train(self, next_inputs, reward):  
-        return self.q_network.backward(next_inputs, reward)
+    def train(self): 
+        self.q_network.backward(self.inputs, self.reward)
+
+    # Função para obter os inputs da rede neural
+    def __get_inputs(self):
+        
+        self.inputs[0] = self.y  # Norte
+        self.inputs[1] = min(self.surface.get_width() - self.x, self.surface.get_width() - self.y)  # Nordeste
+        self.inputs[2] = self.surface.get_width() - self.x  # Leste
+        self.inputs[3] = min(self.surface.get_width() - self.x, self.y)  # Sudeste
+        self.inputs[4] = self.surface.get_height() - self.y  # Sul
+        self.inputs[5] = min(self.x, self.surface.get_height() - self.y)  # Sudoeste
+        self.inputs[6] = self.x  # Oeste
+        self.inputs[7] = min(self.x, self.y)  # Noroeste
+
+        # Normaliza os inputs
+        self.inputs /= max(self.surface.get_width(), self.surface.get_height())
+    
+class PopulationAgent():
+    def __init__(self, population = 50):
+        self.population_number = population
+        self.population_agent_list = self.__get_population()
+        self.agents_reached_goal = []
+
+    def __get_population(self):
+        agent_list = []
+        for _ in range(self.population_number):
+            agent_list.append(Agent())
+        return agent_list
+
+    def move(self):
+        for agent in self.population_agent_list:
+            # Verifica se tem passos sobrando
+            if agent.steps == 0:
+                agent.alive = False
+                print("Acabou os passos")
+                self.population_agent_list.remove(agent)
+            else:
+                agent.move()
+    
+    def draw(self, window):
+        for agent in self.population_agent_list:
+            agent.draw(window)
+    
+    def check_collision(self, obstacles, goal):
+        for agent in self.population_agent_list:
+            agent.check_collision(obstacles, goal)
+            if agent.collided:
+                agent.alive = False
+                print("Atingiu obstaculo")
+                self.population_agent_list.remove(agent)
+            elif agent.reached_goal:
+                print("Atingiu o objetivo")
+                self.agents_reached_goal.append(agent)
+                self.population_agent_list.remove(agent)
+    
+    def check_all_dead_or_rechad_goal(self):
+        for agent in self.population_agent_list:
+            if agent.alive or agent.reached_goal:
+                return False  
+                 
+        return True
+    
+    def save_best_agent(self):
+        less_steps_take = 1000
+        best_agent = None
+
+        for agent in self.agents_reached_goal:
+            if agent.steps < less_steps_take:
+                less_steps_take = agent.steps
+                best_agent = agent
+
+        if best_agent:
+            best_agent.q_network.save_weights("")
+
+    def load_weights(self):
+        self.population_agent_list[0].q_network.load_weights("")
+
+    def act(self):
+        for agent in self.population_agent_list:
+            agent.act()
+    
+    def train(self):
+        for agent in self.population_agent_list:
+            agent.train()
