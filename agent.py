@@ -22,6 +22,9 @@ class Agent:
 
     def move(self, action):
         
+        # prev_x = self.x
+        # prev_y = self.y
+
         # Verifica se a saída da rede neural é uma matriz bidimensional
         # Move o agente com base na ação selecionada
         if len(action.shape) == 1:
@@ -37,8 +40,9 @@ class Agent:
         if 0 <= self.y + dy <= self.surface.get_height() - self.size:
             self.y += dy
 
-        if (self.x != dx) or (self.y != dy):
-            self.steps -= 1
+        # # Verifica se ele saiu do lugar
+        # if (self.x != prev_x) or (self.y != prev_y):
+        self.steps -= 1
     
     def draw(self, window):
         pygame.draw.rect(window, self.color, (self.x, self.y, self.size, self.size))
