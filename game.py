@@ -15,6 +15,8 @@ WINDOW_WIDTH, WINDOW_HEIGHT = 800, 600
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption('Agente que Evita Obstáculos')
 
+generations = 1000
+
 # Define as cores
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -42,55 +44,68 @@ def get_inputs(agent):
 def main():
     run = True
     clock = pygame.time.Clock()
-    
-    agent = Agent()
+
     obstacles = [Obstacle(random.randint(0, WINDOW_WIDTH-50), random.randint(0, WINDOW_HEIGHT-50), 50, 50) for _ in range(5)]
     goal = Goal(WINDOW_WIDTH-40, WINDOW_HEIGHT-40, 40)
-    
-    # Carrega os pesos da rede neural se o arquivo existir
-    if os.path.exists("weights.pkl"):
-        agent.q_network.load_weights()
 
-    while run:
-        clock.tick(30)
-        
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-        
-        # Obtém os inputs da rede neural
-        inputs = get_inputs(agent)
-        action = agent.act(inputs)
+    for i in range(generations):
+        print(f"Generation: {i}")
+        agent = Agent()
+        run = True
 
-        # Move o agente com base na ação selecionada
-        agent.move(action)
-        
-        # Verifica colisões
-        reward, run = agent.check_collision(obstacles, goal)
+        # Carrega os pesos da rede neural se o arquivo existir
+        # if os.path.exists("weights.pkl"):
+        #     agent.q_network.load_weights()
 
-        # Verifica se tem passos sobrando
-        run = agent.steps > 0
+        while run:
+            clock.tick(30)
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            
+            # Obtém os inputs da rede neural
+            inputs = get_inputs(agent)
+            action = agent.act(inputs)
 
-        # Salva os pesos da rede neural após cada episódio
-        if not run and reward == 100:
-            agent.q_network.save_weights()
-        
-        agent.train(inputs, reward)
+            # Move o agente com base na ação selecionada
+            agent.move(action)
+            
+            # Verifica colisões
+            reward, run = agent.check_collision(obstacles, goal)
 
-        window.fill(WHITE)
-        agent.draw(window)
-        for obstacle in obstacles:
-            obstacle.draw(window)
-        goal.draw(window)
-        
-        pygame.display.update()
 
-        if not run:
-            pygame.quit()
-            sys.exit()
-    
-    pygame.quit()
+            if not run:
+                print("Atingiu obstaculo")
+                
+            # Verifica se tem passos sobrando
+            if run == True and agent.steps == 0:
+                print("Acabou os passos")
+                run = False
+
+            # # Salva os pesos da rede neural após cada episódio
+            if not run and reward == 100:
+                print("Atingiu o objetivo")
+                agent.q_network.save_weights()
+            
+            agent.train(inputs, reward)
+
+            window.fill(WHITE)
+            agent.draw(window)
+
+            for obstacle in obstacles:
+                obstacle.draw(window)
+
+            goal.draw(window)
+            
+            pygame.display.update()
+
+    agent.q_network.save_weights()         
+    if not run:
+        pygame.quit()
+        sys.exit()
+
 
 if __name__ == "__main__":
     main()

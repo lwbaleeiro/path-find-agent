@@ -21,4 +21,4 @@ class Goal:
         self.color = (0, 154, 154)
     
     def draw(self, window):
-        pygame.draw.rect(window, self.color, (self.x, self.y, self.size, self.size))
+        pygame.draw.circle(window, self.color, (self.x, self.y), self.size)
