@@ -1,39 +1,16 @@
 # Pathfinder
 
-Pathfinder will navigate through obstacles, aiming to reach the goal on the other side of the screen. With the power of AI, Pathfinder will learn and adapt to the environment, avoiding obstacles and finding 
-the optimal path. 🎮🤖
+**Pathfinder** will navigate through obstacles, aiming to reach the destination on the other side of the screen. With the power of AI, Pathfinder will learn and adapt to the environment, avoiding obstacles and finding the optimal path. 🎮🤖
 
+## How to Execute
 
-Essa rede neural pode ser classificada como uma rede neural feedforward com uma camada oculta e com características de aprendizado por reforço. Aqui estão os pontos principais que justificam essa classificação:
+- First, you need to install the requirements found in the `requirements.txt` file:
 
-Estrutura e Funcionamento
-Arquitetura da Rede:
+  ```bash
+  pip install -r requirements.txt
 
-Camada de Entrada: Aceita um vetor de entrada (input_size).
-Camada Oculta: Uma camada oculta (hidden_size).
-Camada de Saída: Produz um vetor de saída (output_size).
-Função de Ativação:
+- Then, simply execute the `game.py` file in the project folde:
 
-A rede usa a função sigmoide tanto na camada oculta quanto na camada de saída.
-Propagação Direta (Forward Propagation):
-
-O método forward calcula a saída da rede passando os inputs pela camada oculta e, em seguida, pela camada de saída.
-Aprendizado
-Backpropagation:
-
-O método backward implementa a retropropagação do erro para ajustar os pesos (weights_input_hidden e weights_hidden_output) e os bias (bias_hidden e bias_output).
-Utiliza a derivada da função sigmoide para calcular os deltas necessários para o ajuste dos pesos.
-Parâmetros de Aprendizado:
-
-Taxa de Aprendizado (learning_rate): Controla a magnitude da atualização dos pesos.
-Desconto (gamma): Fator de desconto para recompensas futuras, típico em aprendizado por reforço.
-Exploração e Exploração (epsilon, epsilon_decay, min_epsilon): Mecanismos usados em algoritmos de aprendizado por reforço para balancear a exploração de novas ações e a exploração das ações já conhecidas.
-Características de Aprendizado por Reforço
-A rede inclui parâmetros (gamma, epsilon, epsilon_decay, min_epsilon) típicos de um agente de aprendizado por reforço, sugerindo que pode ser usada em contextos onde é necessário aprender a partir de recompensas e ações.
-No método backward, a rede atualiza os pesos com base na recompensa recebida (reward) e na máxima previsão futura (np.max(self.forward(next_inputs))), um conceito comum em métodos de aprendizado por reforço como o Q-learning.
-Armazenamento de Pesos
-A rede possui métodos para salvar (save_weights) e carregar (load_weights) os pesos da rede, facilitando a persistência do modelo treinado.
-Exemplo de Uso
-O exemplo no final do código mostra a inicialização de uma instância da rede, um passo de forward propagation, e um loop de treinamento onde o método backward é chamado várias vezes para ajustar os pesos da rede com base nos inputs e na saída esperada.
-Conclusão
-Essa rede neural é uma rede feedforward com uma camada oculta, projetada para um ambiente de aprendizado por reforço. Ela utiliza backpropagation para ajustar os pesos e incorpora parâmetros específicos para balancear exploração e exploração, bem como um fator de desconto para recompensas futuras.
+  ```bash
+    cd your/folder/path/path-find-agent
+    python game.py
