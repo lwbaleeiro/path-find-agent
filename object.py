@@ -18,12 +18,12 @@ class ObstaclesPhaseOne:
         self.window = window
         self.descripton = "phase_one"
         self.width = 50
-        self.height = 70
+        self.height = 50
         self.obstacles_list = self.__get_obstables()
 
     def __get_obstables(self):
         obstacles = []
-        obstacles_coord = [(250, 250), (400, 400), (550, 150), (700, 100), (700, 500)]
+        obstacles_coord = [(700, 100), (700, 500)]
         for coord in obstacles_coord:
             obstacles.append(Obstacle(self.window, coord[0], coord[1], self.width, self.height)) 
 
@@ -38,12 +38,12 @@ class ObstaclesPhaseTwo:
         self.window = window
         self.descripton = "phase_two"
         self.width = 50
-        self.height = 100
+        self.height = 70
         self.obstacles_list = self.__get_obstables()
 
     def __get_obstables(self):
         obstacles = []
-        obstacles_coord = [(250, 250), (400, 400), (550, 150), (700, 100), (700, 500)]
+        obstacles_coord = [(400, 400), (550, 150), (700, 100), (700, 500)]
         for coord in obstacles_coord:
             obstacles.append(Obstacle(self.window, coord[0], coord[1], self.width, self.height)) 
 

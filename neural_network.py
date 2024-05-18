@@ -53,7 +53,7 @@ class NeuralNetwork:
         self.bias_hidden += np.sum(hidden_delta, axis=0, keepdims=True) * self.learning_rate
         self.bias_output += np.sum(output_delta, axis=0, keepdims=True) * self.learning_rate
 
-        self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)
+        #self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)
 
     # Função para salvar os pesos da rede neural em um arquivo
     def save_weights(self, description):

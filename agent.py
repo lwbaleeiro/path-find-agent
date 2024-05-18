@@ -16,7 +16,7 @@ class Agent:
         self.replay_buffer = replay_buffer
 
         self.size = 20
-        self.x = 10
+        self.x = 100
         self.y = 300
         self.color = (0, 255, 0)
         self.speed = 5
@@ -87,7 +87,7 @@ class Agent:
         if random.uniform(0, 1) <= self.q_network.epsilon:
             self.next_action = np.random.rand(2)
         else:
-            self.next_action = self.q_network.forward(self.inputs) * 2 - 1
+            self.next_action = self.q_network.forward(self.inputs)
 
     # Armazenar as experiências passadas e usar mini-lotes para treinamento pode melhorar a estabilidade e a eficiência do treinamento.
     def store_experience(self, next_state, done):
@@ -108,14 +108,14 @@ class Agent:
     # Função para obter os inputs da rede neural
     def __get_inputs(self):
         
-        self.inputs[0] = self.y  # Norte
-        self.inputs[1] = min(self.surface.get_width() - self.x, self.surface.get_width() - self.y)  # Nordeste
-        self.inputs[2] = self.surface.get_width() - self.x  # Leste
-        self.inputs[3] = min(self.surface.get_width() - self.x, self.y)  # Sudeste
-        self.inputs[4] = self.surface.get_height() - self.y  # Sul
-        self.inputs[5] = min(self.x, self.surface.get_height() - self.y)  # Sudoeste
-        self.inputs[6] = self.x  # Oeste
-        self.inputs[7] = min(self.x, self.y)  # Noroeste
+        self.inputs[7] = self.y  # Norte
+        self.inputs[6] = min(self.surface.get_width() - self.x, self.surface.get_width() - self.y)  # Nordeste
+        self.inputs[5] = self.surface.get_width() - self.x  # Leste
+        self.inputs[4] = min(self.surface.get_width() - self.x, self.y)  # Sudeste
+        self.inputs[3] = self.surface.get_height() - self.y  # Sul
+        self.inputs[2] = min(self.x, self.surface.get_height() - self.y)  # Sudoeste
+        self.inputs[1] = self.x  # Oeste
+        self.inputs[0] = min(self.x, self.y)  # Noroeste
 
         # Normaliza os inputs
         self.inputs /= max(self.surface.get_width(), self.surface.get_height())
