@@ -5,13 +5,13 @@ import random
 import sys
 
 from agent import Agent
-from object import Obstacle, Goal
+from object import ObstaclesPhaseOne, Goal
 
 # Inicializa o Pygame
 pygame.init()
 
 # Define as dimensões da janela do jogo
-WINDOW_WIDTH, WINDOW_HEIGHT = 800, 600
+WINDOW_WIDTH, WINDOW_HEIGHT = 1200, 600
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption('Agente que Evita Obstáculos')
 
@@ -45,8 +45,8 @@ def main():
     run = True
     clock = pygame.time.Clock()
 
-    obstacles = [Obstacle(random.randint(0, WINDOW_WIDTH-50), random.randint(0, WINDOW_HEIGHT-50), 50, 50) for _ in range(5)]
-    goal = Goal(WINDOW_WIDTH-40, WINDOW_HEIGHT-40, 40)
+    obstacles_phase_one = ObstaclesPhaseOne(window)
+    goal = Goal()
 
     for i in range(generations):
         print(f"Generation: {i}")
@@ -73,8 +73,7 @@ def main():
             agent.move(action)
             
             # Verifica colisões
-            reward, run = agent.check_collision(obstacles, goal)
-
+            reward, run = agent.check_collision(obstacles_phase_one.obstacles_list, goal)
 
             if not run:
                 print("Atingiu obstaculo")
@@ -93,9 +92,8 @@ def main():
 
             window.fill(WHITE)
             agent.draw(window)
-
-            for obstacle in obstacles:
-                obstacle.draw(window)
+            
+            obstacles_phase_one.draw()
 
             goal.draw(window)
             

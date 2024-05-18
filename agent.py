@@ -19,7 +19,7 @@ class Agent:
         self.epsilon_decay = 0.995
 
         self.size = 20
-        self.x = 400
+        self.x = 10
         self.y = 300
         self.color = (0, 255, 0)
         self.speed = 5
