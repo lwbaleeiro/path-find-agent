@@ -12,7 +12,11 @@ class NeuralNetwork:
         self.output = []
 
         self.learning_rate = 0.01
+
         self.gamma = 0.9 # Fator de desconto para recompensas futuras
+        self.epsilon = 1.0  # Taxa de exploração inicial
+        self.epsilon_decay = 0.999  # Taxa de decaimento da taxa de exploração
+        self.min_epsilon = 0.01  # Taxa de exploração mínima
 
         # Inicializa os pesos com He Initialization
         self.weights_input_hidden = np.random.randn(self.input_size, self.hidden_size) * np.sqrt(2. / self.input_size)
@@ -48,6 +52,8 @@ class NeuralNetwork:
         self.weights_input_hidden += state.reshape(-1, 1).dot(hidden_delta) * self.learning_rate
         self.bias_hidden += np.sum(hidden_delta, axis=0, keepdims=True) * self.learning_rate
         self.bias_output += np.sum(output_delta, axis=0, keepdims=True) * self.learning_rate
+
+        self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)
 
     # Função para salvar os pesos da rede neural em um arquivo
     def save_weights(self, description):
