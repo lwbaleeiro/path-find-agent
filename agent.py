@@ -19,7 +19,7 @@ class Agent:
         self.x = 10
         self.y = 300
         self.color = (0, 255, 0)
-        self.speed = 10
+        self.speed = 5
         self.alive = True
 
         self.collided = False
@@ -43,11 +43,8 @@ class Agent:
                 dx = (action[0][0] - 0.5) * 2 * self.speed
                 dy = (action[0][1] - 0.5) * 2 * self.speed
 
-            # Verifica se o agente vai colidir com as bordas da tela
-            if 0 <= self.x + dx <= self.surface.get_width() - self.size:
-                self.x += dx
-            if 0 <= self.y + dy <= self.surface.get_height() - self.size:
-                self.y += dy
+            self.x += dx
+            self.y += dy
 
             self.steps -= 1
             self.reward -= 0.01
@@ -65,7 +62,13 @@ class Agent:
                 self.y + self.size > obstacle.y):
                 self.collided = True
                 self.reward = -100
-        
+
+        # Verifica se o agente vai colidir com as bordas da tela
+        if (self.x >= self.surface.get_width() - self.size or self.x <= 0 or 
+            self.y >= self.surface.get_height() - self.size or self.y <= 0):
+            self.collided = True
+            self.reward = -100
+
         if (self.x < goal.x + goal.size and
             self.x + self.size > goal.x and
             self.y < goal.y + goal.size and
@@ -100,10 +103,6 @@ class Agent:
             if not done:
                 target += self.q_network.gamma * np.max(self.q_network.forward(next_state))
             
-            # target_f = self.q_network.forward(state)
-            # target_f[0][np.argmax(action)] = target
-
-            # self.q_network.backward(state, target_f)
             self.q_network.backward(state, target)           
 
     # Função para obter os inputs da rede neural
