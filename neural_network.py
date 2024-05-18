@@ -53,21 +53,6 @@ class NeuralNetwork:
 
         self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)
 
-    # Função para salvar e carregar a rede neural
-    def save_model(self):
-        np.savez("np_weights",
-                weights_input_hidden = self.weights_input_hidden,
-                weights_hidden_output = self.weights_hidden_output,
-                bias_hidden = self.bias_hidden,
-                bias_output = self.bias_output)
-
-    def load_model(self):
-        npzfile = np.load("np_weights")
-        self.weights_input_hidden = npzfile['weights_input_hidden']
-        self.weights_hidden_output = npzfile['weights_hidden_output']
-        self.bias_hidden = npzfile['bias_hidden']
-        self.bias_output = npzfile['bias_output']
-
     # Função para salvar os pesos da rede neural em um arquivo
     def save_weights(self):
         with open("weights.pkl", 'wb') as f:

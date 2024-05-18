@@ -1,27 +1,32 @@
 import pygame
 import numpy as np
 import os
-import random
 import sys
 
 from agent import Agent
 from object import ObstaclesPhaseOne, Goal
 
-# Inicializa o Pygame
 pygame.init()
 
 # Define as dimensões da janela do jogo
 WINDOW_WIDTH, WINDOW_HEIGHT = 1200, 600
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-pygame.display.set_caption('Agente que Evita Obstáculos')
+pygame.display.set_caption('Pathfinder')
+font = pygame.font.Font(None, 26)
 
 generations = 1000
 
-# Define as cores
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
+
+def display_info(generation, steps):
+    text = font.render(f"Generation: {generation}", True, BLACK)
+    window.blit(text, (400, 10))
+
+    text = font.render(f"Steps left: {steps}", True, BLACK)
+    window.blit(text, (600, 10))
 
 # Função para obter os inputs da rede neural
 def get_inputs(agent):
@@ -48,14 +53,13 @@ def main():
     obstacles_phase_one = ObstaclesPhaseOne(window)
     goal = Goal()
 
-    for i in range(generations):
-        print(f"Generation: {i}")
+    for gen in range(generations):
         agent = Agent()
         run = True
 
         # Carrega os pesos da rede neural se o arquivo existir
-        # if os.path.exists("weights.pkl"):
-        #     agent.q_network.load_weights()
+        if os.path.exists("weights.pkl"):
+            agent.q_network.load_weights()
 
         while run:
             clock.tick(30)
@@ -83,19 +87,21 @@ def main():
                 print("Acabou os passos")
                 run = False
 
-            # # Salva os pesos da rede neural após cada episódio
+            # Salva os pesos da rede neural caso tenha chegado ao objetivo
             if not run and reward == 100:
                 print("Atingiu o objetivo")
                 agent.q_network.save_weights()
+                break
             
+            # Atualiza os pesos e bias de acordo com os inputs
             agent.train(inputs, reward)
 
+            # Desenha objetos
             window.fill(WHITE)
             agent.draw(window)
-            
             obstacles_phase_one.draw()
-
             goal.draw(window)
+            display_info(gen, agent.steps)
             
             pygame.display.update()
 
@@ -103,7 +109,6 @@ def main():
     if not run:
         pygame.quit()
         sys.exit()
-
 
 if __name__ == "__main__":
     main()

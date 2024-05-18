@@ -5,18 +5,11 @@ import pygame
 
 class Agent:
     def __init__(self, input_size=8, hidden_size=16, output_size=2):
-
+        
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.output_size = output_size
-
         self.q_network = NeuralNetwork(self.input_size, hidden_size, self.output_size)
-
-        self.learning_rate = 0.01
-        self.gamma = 0.95
-        self.epsilon = 1.0
-        self.epsilon_min = 0.01
-        self.epsilon_decay = 0.995
 
         self.size = 20
         self.x = 10
@@ -54,7 +47,7 @@ class Agent:
                 self.x + self.size > obstacle.x and
                 self.y < obstacle.y + obstacle.height and
                 self.y + self.size > obstacle.y):
-                return -100, False
+                return -200, False
         
         if (self.x < goal.x + goal.size and
             self.x + self.size > goal.x and
