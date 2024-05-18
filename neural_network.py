@@ -15,12 +15,12 @@ class NeuralNetwork:
 
         self.gamma = 0.9 # Fator de desconto para recompensas futuras
         self.epsilon = 1.0  # Taxa de exploração inicial
-        self.epsilon_decay = 0.995  # Taxa de decaimento da taxa de exploração
+        self.epsilon_decay = 0.999  # Taxa de decaimento da taxa de exploração
         self.min_epsilon = 0.01  # Taxa de exploração mínima
 
-        # Inicializa os pesos
-        self.weights_input_hidden = np.random.randn(self.input_size, self.hidden_size)
-        self.weights_hidden_output = np.random.randn(self.hidden_size, self.output_size)
+        # Inicializa os pesos com He Initialization
+        self.weights_input_hidden = np.random.randn(self.input_size, self.hidden_size) * np.sqrt(2. / self.input_size)
+        self.weights_hidden_output = np.random.randn(self.hidden_size, self.output_size) * np.sqrt(2. / self.hidden_size)
 
         # Inicializa os bias
         self.bias_hidden = np.zeros((1, self.hidden_size))
@@ -37,8 +37,9 @@ class NeuralNetwork:
         self.output = self.sigmoid(np.dot(self.hidden, self.weights_hidden_output) + self.bias_output)
         return self.output
 
-    def backward(self, next_inputs, reward):
-        target = reward + self.gamma * np.max(self.forward(next_inputs))
+    def backward(self, state, target):
+
+        self.forward(state)
 
         output_error = target - self.output
         output_delta = output_error * self.sigmoid_derivative(self.output)
@@ -48,11 +49,11 @@ class NeuralNetwork:
 
         # Atualiza os pesos e bias
         self.weights_hidden_output += self.hidden.T.dot(output_delta) * self.learning_rate
-        self.weights_input_hidden += next_inputs.reshape(-1, 1).dot(hidden_delta) * self.learning_rate
+        self.weights_input_hidden += state.reshape(-1, 1).dot(hidden_delta) * self.learning_rate
         self.bias_hidden += np.sum(hidden_delta, axis=0, keepdims=True) * self.learning_rate
         self.bias_output += np.sum(output_delta, axis=0, keepdims=True) * self.learning_rate
 
-        self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)
+        # self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)
 
     # Função para salvar os pesos da rede neural em um arquivo
     def save_weights(self, description):

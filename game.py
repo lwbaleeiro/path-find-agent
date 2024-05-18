@@ -36,13 +36,14 @@ def main():
     obstacles = ObstaclesPhaseOne(window)
     goal = Goal()
 
+    agents = PopulationAgent()
+    # Carrega os pesos da rede neural se o arquivo existir
+    agents.load_weights()
+
     for gen in range(generations):
 
-        agents = PopulationAgent(1)
+        agents = PopulationAgent()
         run = True
-
-        # Carrega os pesos da rede neural se o arquivo existir
-        agents.load_weights()
 
         while run:
             clock.tick(30)
@@ -52,24 +53,15 @@ def main():
                     pygame.quit()
                     sys.exit()
             
-            # Pega a proxima ação do agente
             agents.act()
-
-            # Move o agente com base na ação selecionada
             agents.move()
-            
-            # Verifica colisões
             agents.check_collision(obstacles.obstacles_list, goal)
-            
-            # Atualiza os pesos e bias de acordo com os inputs
             agents.train()
 
-            # Verifica se deve continuar
             if agents.check_all_dead_or_rechad_goal() == True:
-                run = False
                 agents.save_best_agent()
+                run = False
 
-            # Desenha objetos
             window.blit(background_image, (0, 0))
             agents.draw(window)
             obstacles.draw()
@@ -78,7 +70,6 @@ def main():
 
             pygame.display.update()   
 
-    if not run:
         pygame.quit()
         sys.exit()
 
