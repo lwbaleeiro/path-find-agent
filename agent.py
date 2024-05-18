@@ -36,14 +36,12 @@ class Agent:
             action = self.next_action 
             # Verifica se a saída da rede neural é uma matriz bidimensional
             # Move o agente com base na ação selecionada
-            dx = (action[0] - 0.5) * 2 * self.speed
-            dy = (action[1] - 0.5) * 2 * self.speed
-            # if len(action.shape) == 1:
-            #     dx = (action[0] - 0.5) * 2 * self.speed
-            #     dy = (action[1] - 0.5) * 2 * self.speed
-            # else:
-            #     dx = (action[0][0] - 0.5) * 2 * self.speed
-            #     dy = (action[0][1] - 0.5) * 2 * self.speed
+            if len(action.shape) == 1:
+                dx = (action[0] - 0.5) * 2 * self.speed
+                dy = (action[1] - 0.5) * 2 * self.speed
+            else:
+                dx = (action[0][0] - 0.5) * 2 * self.speed
+                dy = (action[0][1] - 0.5) * 2 * self.speed
 
             # Verifica se o agente vai colidir com as bordas da tela
             if 0 <= self.x + dx <= self.surface.get_width() - self.size:
