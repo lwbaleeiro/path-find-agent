@@ -5,7 +5,8 @@ import pygame
 
 class Agent:
     def __init__(self, input_size=8, hidden_size=16, output_size=2):
-        
+
+        self.surface = pygame.display.get_surface() 
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.output_size = output_size
@@ -21,7 +22,6 @@ class Agent:
 
     def move(self, action):
         
-        self.steps -= 1
         # Verifica se a saída da rede neural é uma matriz bidimensional
         # Move o agente com base na ação selecionada
         if len(action.shape) == 1:
@@ -32,10 +32,13 @@ class Agent:
             dy = (action[0][1] - 0.5) * 2 * self.speed
 
         # Verifica se o agente vai colidir com as bordas da tela
-        if 0 <= self.x + dx <= 800 - self.size:
+        if 0 <= self.x + dx <= self.surface.get_width() - self.size:
             self.x += dx
-        if 0 <= self.y + dy <= 600 - self.size:
+        if 0 <= self.y + dy <= self.surface.get_height() - self.size:
             self.y += dy
+
+        if (self.x != dx) or (self.y != dy):
+            self.steps -= 1
     
     def draw(self, window):
         pygame.draw.rect(window, self.color, (self.x, self.y, self.size, self.size))
