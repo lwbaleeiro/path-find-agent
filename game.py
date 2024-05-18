@@ -9,10 +9,12 @@ from object import ObstaclesPhaseOne, Goal
 pygame.init()
 
 # Define as dimensões da janela do jogo
-WINDOW_WIDTH, WINDOW_HEIGHT = 1200, 600
+WINDOW_WIDTH, WINDOW_HEIGHT = 900, 600
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption('Pathfinder')
 font = pygame.font.Font(None, 26)
+background_image = pygame.image.load("background.jpg").convert()
+background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
 generations = 1000
 
@@ -97,7 +99,7 @@ def main():
             agent.train(inputs, reward)
 
             # Desenha objetos
-            window.fill(WHITE)
+            window.blit(background_image, (0, 0))
             agent.draw(window)
             obstacles_phase_one.draw()
             goal.draw(window)
