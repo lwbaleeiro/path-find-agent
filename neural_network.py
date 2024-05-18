@@ -1,5 +1,6 @@
 import numpy as np
 import pickle
+import os
 
 class NeuralNetwork:
     def __init__(self, input_size, hidden_size, output_size):
@@ -61,9 +62,10 @@ class NeuralNetwork:
 
     # Função para carregar os pesos da rede neural de um arquivo
     def load_weights(self, description):
-        with open(f"weights_{description}.pkl", 'rb') as file:
-            self.weights_input_hidden = pickle.load(file)
-            self.weights_hidden_output = pickle.load(file)
+        if os.path.exists(f"weights_{description}.pkl"):
+            with open(f"weights_{description}.pkl", 'rb') as file:
+                self.weights_input_hidden = pickle.load(file)
+                self.weights_hidden_output = pickle.load(file)
 
 # Exemplo de uso:
 if __name__ == "__main__":
