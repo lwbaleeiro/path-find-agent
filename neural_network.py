@@ -54,8 +54,8 @@ class NeuralNetwork:
         self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)
 
     # Função para salvar os pesos da rede neural em um arquivo
-    def save_weights(self):
-        with open("weights.pkl", 'wb') as f:
+    def save_weights(self, description):
+        with open(f"weights_{description}.pkl", 'wb') as f:
             pickle.dump(self.weights_input_hidden, f)
             pickle.dump(self.weights_hidden_output, f)
 

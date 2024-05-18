@@ -16,8 +16,29 @@ class Obstacle:
 class ObstaclesPhaseOne:
     def __init__(self, window):
         self.window = window
+        self.descripton = "phase_one"
         self.width = 50
         self.height = 70
+        self.obstacles_list = self.__get_obstables()
+
+    def __get_obstables(self):
+        obstacles = []
+        obstacles_coord = [(250, 250), (400, 400), (550, 150), (700, 100), (700, 500)]
+        for coord in obstacles_coord:
+            obstacles.append(Obstacle(self.window, coord[0], coord[1], self.width, self.height)) 
+
+        return obstacles
+    
+    def draw(self):
+        for obstable in self.obstacles_list:
+            obstable.draw()
+
+class ObstaclesPhaseTwo:
+    def __init__(self, window):
+        self.window = window
+        self.descripton = "phase_two"
+        self.width = 50
+        self.height = 100
         self.obstacles_list = self.__get_obstables()
 
     def __get_obstables(self):

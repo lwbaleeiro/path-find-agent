@@ -52,7 +52,7 @@ def main():
     run = True
     clock = pygame.time.Clock()
 
-    obstacles_phase_one = ObstaclesPhaseOne(window)
+    obstacles = ObstaclesPhaseOne(window)
     goal = Goal()
 
     for gen in range(generations):
@@ -60,7 +60,7 @@ def main():
         run = True
 
         # Carrega os pesos da rede neural se o arquivo existir
-        if os.path.exists("weights.pkl"):
+        if os.path.exists(f"weights_{obstacles.descripton}.pkl"):
             agent.q_network.load_weights()
 
         while run:
@@ -79,7 +79,7 @@ def main():
             agent.move(action)
             
             # Verifica colisões
-            reward, run = agent.check_collision(obstacles_phase_one.obstacles_list, goal)
+            reward, run = agent.check_collision(obstacles.obstacles_list, goal)
 
             if not run:
                 print("Atingiu obstaculo")
@@ -92,7 +92,7 @@ def main():
             # Salva os pesos da rede neural caso tenha chegado ao objetivo
             if not run and reward == 100:
                 print("Atingiu o objetivo")
-                agent.q_network.save_weights()
+                agent.q_network.save_weights(obstacles.descripton)
                 break
             
             # Atualiza os pesos e bias de acordo com os inputs
@@ -101,7 +101,7 @@ def main():
             # Desenha objetos
             window.blit(background_image, (0, 0))
             agent.draw(window)
-            obstacles_phase_one.draw()
+            obstacles.draw()
             goal.draw(window)
             display_info(gen, agent.steps)
             
