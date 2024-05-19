@@ -18,7 +18,7 @@ class ObstaclesPhaseOne:
         self.window = window
         self.descripton = "phase_one"
         self.width = 50
-        self.height = 50
+        self.height = 70
         self.obstacles_list = self.__get_obstables()
 
     def __get_obstables(self):
@@ -56,7 +56,7 @@ class ObstaclesPhaseTwo:
 # Classe para o objetivo
 class Goal:
     def __init__(self, size = 24):
-        self.x = pygame.display.get_surface().get_width() - 50
+        self.x = pygame.display.get_surface().get_width() - 150
         self.y = pygame.display.get_surface().get_height() // 2
         self.size = size
         self.color = (0, 154, 154)

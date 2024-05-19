@@ -19,7 +19,7 @@ class Agent:
         self.x = 100
         self.y = 300
         self.color = (0, 255, 0)
-        self.speed = 5
+        self.speed = 7
         self.alive = True
 
         self.collided = False
@@ -29,7 +29,7 @@ class Agent:
         self.inputs = np.zeros(8)  # 8 inputs: distâncias nas direções N, NE, E, SE, S, SW, W, NW
         self.memory = deque(maxlen=2000)
 
-        self.steps = 6000
+        self.steps = 4000
 
     def move(self):
         if self.alive == True:

@@ -36,13 +36,13 @@ def main():
     obstacles = ObstaclesPhaseOne(window)
     goal = Goal()
 
-    agents = PopulationAgent()
+    agents = PopulationAgent(100)
     # Carrega os pesos da rede neural se o arquivo existir
     agents.load_weights()
 
     for gen in range(generations):
 
-        agents = PopulationAgent()
+        agents = PopulationAgent(100)
         run = True
 
         while run:
