@@ -42,7 +42,7 @@ def main():
 
     for gen in range(generations):
 
-        agents = PopulationAgent(100)
+        agents = PopulationAgent(1)
         run = True
 
         while run:

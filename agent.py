@@ -180,6 +180,7 @@ class PopulationAgent():
             best_agent.q_network.save_weights("")
 
     def load_weights(self):
+        print("carregou pesos")
         self.population_agent_list[0].q_network.load_weights("")
 
     def act(self):
